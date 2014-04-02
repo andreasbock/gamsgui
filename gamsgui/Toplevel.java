@@ -17,6 +17,7 @@ public class Toplevel extends javax.swing.JFrame {
      */
     public Toplevel() {
         initComponents();
+        splitPane.setResizeWeight(0.5);
     }
 
     /**
@@ -30,14 +31,14 @@ public class Toplevel extends javax.swing.JFrame {
         java.awt.GridBagConstraints gridBagConstraints;
 
         mainPanel = new javax.swing.JPanel();
-        jTabbedPane1 = new javax.swing.JTabbedPane();
-        jSplitPane1 = new javax.swing.JSplitPane();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        jEditorPane1 = new javax.swing.JEditorPane();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        jEditorPane2 = new javax.swing.JEditorPane();
+        tabbedPane = new javax.swing.JTabbedPane();
+        splitPane = new javax.swing.JSplitPane();
+        editorSplitPanel = new javax.swing.JScrollPane();
+        editorPanel = new javax.swing.JEditorPane();
+        lstSplitPanel = new javax.swing.JScrollPane();
+        lstPanel = new javax.swing.JEditorPane();
         topPanel = new javax.swing.JPanel();
-        jButton1 = new javax.swing.JButton();
+        runButton = new javax.swing.JButton();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenu2 = new javax.swing.JMenu();
@@ -49,29 +50,31 @@ public class Toplevel extends javax.swing.JFrame {
         mainPanel.setPreferredSize(new java.awt.Dimension(500, 500));
         mainPanel.setLayout(new java.awt.GridBagLayout());
 
-        jTabbedPane1.setAlignmentX(0.0F);
-        jTabbedPane1.setAlignmentY(0.0F);
-        jTabbedPane1.setMinimumSize(new java.awt.Dimension(500, 500));
-        jTabbedPane1.setPreferredSize(new java.awt.Dimension(500, 500));
+        tabbedPane.setAlignmentX(0.0F);
+        tabbedPane.setAlignmentY(0.0F);
+        tabbedPane.setMinimumSize(new java.awt.Dimension(500, 500));
+        tabbedPane.setPreferredSize(new java.awt.Dimension(500, 500));
 
-        jSplitPane1.setContinuousLayout(true);
+        splitPane.setContinuousLayout(true);
 
-        jScrollPane1.setViewportView(jEditorPane1);
+        editorSplitPanel.setPreferredSize(new java.awt.Dimension(150, 50));
+        editorSplitPanel.setViewportView(editorPanel);
 
-        jSplitPane1.setLeftComponent(jScrollPane1);
+        splitPane.setLeftComponent(editorSplitPanel);
 
-        jScrollPane2.setViewportView(jEditorPane2);
+        lstSplitPanel.setPreferredSize(new java.awt.Dimension(150, 50));
+        lstSplitPanel.setViewportView(lstPanel);
 
-        jSplitPane1.setRightComponent(jScrollPane2);
+        splitPane.setRightComponent(lstSplitPanel);
 
-        jTabbedPane1.addTab("tab1", jSplitPane1);
+        tabbedPane.addTab("tab1", splitPane);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
-        mainPanel.add(jTabbedPane1, gridBagConstraints);
+        mainPanel.add(tabbedPane, gridBagConstraints);
 
         topPanel.setAlignmentX(0.0F);
         topPanel.setAlignmentY(0.0F);
@@ -79,11 +82,11 @@ public class Toplevel extends javax.swing.JFrame {
         topPanel.setPreferredSize(new java.awt.Dimension(500, 80));
         topPanel.setLayout(new java.awt.GridBagLayout());
 
-        jButton1.setText("jButton1");
-        jButton1.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
-        jButton1.setIconTextGap(0);
-        jButton1.setVerticalAlignment(javax.swing.SwingConstants.TOP);
-        jButton1.setVerticalTextPosition(javax.swing.SwingConstants.TOP);
+        runButton.setText("Run");
+        runButton.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
+        runButton.setIconTextGap(0);
+        runButton.setVerticalAlignment(javax.swing.SwingConstants.TOP);
+        runButton.setVerticalTextPosition(javax.swing.SwingConstants.TOP);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
@@ -91,7 +94,7 @@ public class Toplevel extends javax.swing.JFrame {
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(4, 0, 0, 0);
-        topPanel.add(jButton1, gridBagConstraints);
+        topPanel.add(runButton, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -155,17 +158,17 @@ public class Toplevel extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
-    private javax.swing.JEditorPane jEditorPane1;
-    private javax.swing.JEditorPane jEditorPane2;
+    private javax.swing.JEditorPane editorPanel;
+    private javax.swing.JScrollPane editorSplitPanel;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuBar jMenuBar1;
-    private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JSplitPane jSplitPane1;
-    private javax.swing.JTabbedPane jTabbedPane1;
+    private javax.swing.JEditorPane lstPanel;
+    private javax.swing.JScrollPane lstSplitPanel;
     private javax.swing.JPanel mainPanel;
+    private javax.swing.JButton runButton;
+    private javax.swing.JSplitPane splitPane;
+    private javax.swing.JTabbedPane tabbedPane;
     private javax.swing.JPanel topPanel;
     // End of variables declaration//GEN-END:variables
 }
