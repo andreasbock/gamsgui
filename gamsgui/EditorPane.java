@@ -6,11 +6,14 @@
 
 package gamsgui;
 
-import java.awt.GridBagConstraints;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.Scanner;
+import javax.swing.JOptionPane;
 
 /**
  *
- * @author batman
+ * @author Andreas Bock
  */
 public class EditorPane extends javax.swing.JPanel {
 
@@ -20,7 +23,27 @@ public class EditorPane extends javax.swing.JPanel {
     public EditorPane()
     {
         initComponents();
-        splitPane.setResizeWeight(0.5);
+        setUpEditorPane();
+    }
+    
+    /**
+     * Creates new form EditorPane specifying a file to display
+     * @param f;
+     */
+    public EditorPane(File f)
+    {
+        initComponents();
+        setUpEditorPane();
+        
+        try
+        {
+            String text = new Scanner(f).useDelimiter("\\A").next();
+            editorPanel.setText(text);
+        }
+        catch (FileNotFoundException e)
+        {
+            JOptionPane.showMessageDialog(null, "Could not open the file.", "GAMSGUI", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     /**
@@ -75,4 +98,14 @@ public class EditorPane extends javax.swing.JPanel {
     private javax.swing.JScrollPane lstSplitPanel;
     private javax.swing.JSplitPane splitPane;
     // End of variables declaration//GEN-END:variables
+
+    private void setUpEditorPane()
+    {
+        splitPane.setResizeWeight(0.5);
+    }
+    
+    public boolean isBlank()
+    {
+        return editorPanel.getDocument().getLength() <= 0;
+    }
 }

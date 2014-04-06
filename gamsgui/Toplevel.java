@@ -6,12 +6,19 @@
 
 package gamsgui;
 
+import com.gams.api.GAMSJob;
+import com.gams.api.GAMSVariable;
+import com.gams.api.GAMSVariableRecord;
+import com.gams.api.GAMSWorkspace;
+import java.io.File;
+import javax.swing.JFileChooser;
+
 /**
  *
- * @author batman
+ * @author Andreas Bock
  */
 public class Toplevel extends javax.swing.JFrame {
-
+    
     /**
      * Creates new form Toplevel
      */
@@ -20,7 +27,8 @@ public class Toplevel extends javax.swing.JFrame {
         initComponents();
         
         // Add new file
-        tabbedPane.addTab("New File", new EditorPane());
+        File test = new File("/tmp/test.gms");
+        tabbedPane.addTab("New File", new EditorPane(test));
         
         // Pack to set divider location correctly
         pack();
@@ -41,9 +49,10 @@ public class Toplevel extends javax.swing.JFrame {
         bottomPanel = new javax.swing.JPanel();
         runButton = new javax.swing.JButton();
         menuBar = new javax.swing.JMenuBar();
-        jMenu1 = new javax.swing.JMenu();
-        jMenuItem1 = new javax.swing.JMenuItem();
-        jMenu2 = new javax.swing.JMenu();
+        fileMenu = new javax.swing.JMenu();
+        openFileMenuItem = new javax.swing.JMenuItem();
+        closeMenuItem = new javax.swing.JMenuItem();
+        editMenu = new javax.swing.JMenu();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         getContentPane().setLayout(new java.awt.GridBagLayout());
@@ -74,6 +83,11 @@ public class Toplevel extends javax.swing.JFrame {
         runButton.setIconTextGap(0);
         runButton.setVerticalAlignment(javax.swing.SwingConstants.TOP);
         runButton.setVerticalTextPosition(javax.swing.SwingConstants.TOP);
+        runButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                runButtonActionPerformed(evt);
+            }
+        });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
@@ -98,31 +112,46 @@ public class Toplevel extends javax.swing.JFrame {
         gridBagConstraints.weighty = 1.0;
         getContentPane().add(mainPanel, gridBagConstraints);
 
-        jMenu1.setText("File");
+        fileMenu.setText("File");
 
-        jMenuItem1.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_O, java.awt.event.InputEvent.CTRL_MASK));
-        jMenuItem1.setText("Open..");
-        jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
+        openFileMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_O, java.awt.event.InputEvent.CTRL_MASK));
+        openFileMenuItem.setText("Open File");
+        openFileMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem1ActionPerformed(evt);
+                openFileMenuItemActionPerformed(evt);
             }
         });
-        jMenu1.add(jMenuItem1);
+        fileMenu.add(openFileMenuItem);
 
-        menuBar.add(jMenu1);
+        closeMenuItem.setText("Close");
+        closeMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                closeMenuItemActionPerformed(evt);
+            }
+        });
+        fileMenu.add(closeMenuItem);
 
-        jMenu2.setText("Edit");
-        menuBar.add(jMenu2);
+        menuBar.add(fileMenu);
+
+        editMenu.setText("Edit");
+        menuBar.add(editMenu);
 
         setJMenuBar(menuBar);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
-//        tabbedPane.setEnabled(true);
-        tabbedPane.setVisible(true);
-    }//GEN-LAST:event_jMenuItem1ActionPerformed
+    private void openFileMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openFileMenuItemActionPerformed
+            openFile();
+    }//GEN-LAST:event_openFileMenuItemActionPerformed
+
+    private void closeMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_closeMenuItemActionPerformed
+        System.exit(0);
+    }//GEN-LAST:event_closeMenuItemActionPerformed
+
+    private void runButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_runButtonActionPerformed
+        runGAMS();
+    }//GEN-LAST:event_runButtonActionPerformed
 
     /**
      * @param args the command line arguments
@@ -161,12 +190,56 @@ public class Toplevel extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel bottomPanel;
-    private javax.swing.JMenu jMenu1;
-    private javax.swing.JMenu jMenu2;
-    private javax.swing.JMenuItem jMenuItem1;
+    private javax.swing.JMenuItem closeMenuItem;
+    private javax.swing.JMenu editMenu;
+    private javax.swing.JMenu fileMenu;
     private javax.swing.JPanel mainPanel;
     private javax.swing.JMenuBar menuBar;
+    private javax.swing.JMenuItem openFileMenuItem;
     private javax.swing.JButton runButton;
     private javax.swing.JTabbedPane tabbedPane;
     // End of variables declaration//GEN-END:variables
+
+    private void openFile()
+    {
+        final JFileChooser fc = new JFileChooser();
+        int returnVal = fc.showOpenDialog(Toplevel.this);
+        
+        // If a file is selected load it into a new EditorPane,
+        // deleting blank "New File" in the process
+        if (returnVal == JFileChooser.APPROVE_OPTION)
+        {
+            // If the first tab is blank we can safely delete it
+            EditorPane ep = (EditorPane) tabbedPane.getComponent(0);
+            if (ep.isBlank())
+            {
+                tabbedPane.remove(0);
+            }
+            File f = fc.getSelectedFile();
+            
+            EditorPane newEditorPane = new EditorPane(f);
+            tabbedPane.addTab(f.getName(), newEditorPane);
+            
+            int focusIndex = tabbedPane.getTabCount() - 1;
+            tabbedPane.setSelectedIndex(focusIndex);
+        }
+    }
+    
+    private void runGAMS()
+    {
+        runButton.setEnabled(false);
+        GAMSWorkspace ws = new GAMSWorkspace();
+        GAMSJob t1 = ws.addJobFromFile("/tmp/test.gms");
+        t1.run();
+        System.out.println("Ran with Default:");
+        GAMSVariable x = t1.OutDB().getVariable("x");
+        for (GAMSVariableRecord rec : x)
+        {
+                System.out.print("x(" + rec.getKeys()[0] + ", " +
+                rec.getKeys()[1] + "):");
+                System.out.print(", level = " + rec.getLevel());
+                System.out.println(", marginal = " + rec.getMarginal());
+        }
+        runButton.setEnabled(true);
+    }
 }
