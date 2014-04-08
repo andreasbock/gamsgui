@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
 import javax.swing.JOptionPane;
+import javax.swing.JTextArea;
 
 /**
  *
@@ -59,8 +60,8 @@ public class EditorPane extends javax.swing.JPanel {
         splitPane = new javax.swing.JSplitPane();
         editorSplitPanel = new javax.swing.JScrollPane();
         editorPanel = new javax.swing.JEditorPane();
-        lstSplitPanel = new javax.swing.JScrollPane();
-        lstPanel = new javax.swing.JEditorPane();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        lstPanel = new javax.swing.JTextArea();
 
         java.awt.GridBagLayout layout = new java.awt.GridBagLayout();
         layout.columnWeights = new double[] {1.0};
@@ -74,10 +75,11 @@ public class EditorPane extends javax.swing.JPanel {
 
         splitPane.setLeftComponent(editorSplitPanel);
 
-        lstSplitPanel.setPreferredSize(new java.awt.Dimension(150, 50));
-        lstSplitPanel.setViewportView(lstPanel);
+        lstPanel.setColumns(20);
+        lstPanel.setRows(5);
+        jScrollPane1.setViewportView(lstPanel);
 
-        splitPane.setRightComponent(lstSplitPanel);
+        splitPane.setRightComponent(jScrollPane1);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -94,8 +96,8 @@ public class EditorPane extends javax.swing.JPanel {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JEditorPane editorPanel;
     private javax.swing.JScrollPane editorSplitPanel;
-    private javax.swing.JEditorPane lstPanel;
-    private javax.swing.JScrollPane lstSplitPanel;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTextArea lstPanel;
     private javax.swing.JSplitPane splitPane;
     // End of variables declaration//GEN-END:variables
 
@@ -107,5 +109,15 @@ public class EditorPane extends javax.swing.JPanel {
     public boolean isBlank()
     {
         return editorPanel.getDocument().getLength() <= 0;
+    }
+    
+    public String getProgram ()
+    {
+        return editorPanel.getText();
+    }
+    
+    public JTextArea getListingPanel ()
+    {
+        return lstPanel;
     }
 }

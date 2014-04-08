@@ -7,11 +7,15 @@
 package gamsgui;
 
 import com.gams.api.GAMSJob;
-import com.gams.api.GAMSVariable;
-import com.gams.api.GAMSVariableRecord;
 import com.gams.api.GAMSWorkspace;
 import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintStream;
+import javax.swing.JEditorPane;
 import javax.swing.JFileChooser;
+import javax.swing.JTextArea;
+import javax.swing.SwingUtilities;
 
 /**
  *
@@ -142,7 +146,7 @@ public class Toplevel extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void openFileMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openFileMenuItemActionPerformed
-            openFile();
+        openFile();
     }//GEN-LAST:event_openFileMenuItemActionPerformed
 
     private void closeMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_closeMenuItemActionPerformed
@@ -227,10 +231,23 @@ public class Toplevel extends javax.swing.JFrame {
     
     private void runGAMS()
     {
+        // Disable run button
         runButton.setEnabled(false);
+        
+        // Get program from tab in focus
+        EditorPane editorPaneInFocus = (EditorPane) tabbedPane.getSelectedComponent();
+        String program = editorPaneInFocus.getProgram();
+        
+        // Set up GAMS
         GAMSWorkspace ws = new GAMSWorkspace();
-        GAMSJob t1 = ws.addJobFromFile("/tmp/test.gms");
-        t1.run();
+        GAMSJob t1 = ws.addJobFromString(program);
+        
+        // Set input/output
+        JTextArea listingPane = editorPaneInFocus.getListingPanel();
+        TextAreaOutputStream os = new TextAreaOutputStream(listingPane);
+        PrintStream ps = new PrintStream(os);
+        t1.run(ps);
+        /*
         System.out.println("Ran with Default:");
         GAMSVariable x = t1.OutDB().getVariable("x");
         for (GAMSVariableRecord rec : x)
@@ -240,6 +257,53 @@ public class Toplevel extends javax.swing.JFrame {
                 System.out.print(", level = " + rec.getLevel());
                 System.out.println(", marginal = " + rec.getMarginal());
         }
-        runButton.setEnabled(true);
+        runButton.setEnabled(true);*/
+    }
+
+    public class TextAreaOutputStream extends OutputStream
+    {
+
+        private final JTextArea textArea;
+        private final StringBuilder sb = new StringBuilder();
+
+        public TextAreaOutputStream(final JTextArea textArea)
+        {
+            this.textArea = textArea;
+        }
+
+        @Override
+        public void flush()
+        {
+        }
+
+        @Override
+        public void close()
+        {
+        }
+
+        @Override
+        public void write(int b) throws IOException
+        {
+
+            if (b == '\r')
+                return;
+
+            if (b == '\n')
+            {
+                final String text = sb.toString() + "\n";
+                SwingUtilities.invokeLater(new Runnable()
+                {
+                    public void run()
+                    {
+                        textArea.append(text);
+                    }
+                });
+                sb.setLength(0);
+
+                return;
+            }
+
+            sb.append((char) b);
+        }
     }
 }
